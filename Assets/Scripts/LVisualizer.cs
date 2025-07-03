@@ -64,8 +64,8 @@ public class LVisualizer : MonoBehaviour
                     break;
             }
         }
+        roadHelper.FixRoads();
 
-        
     }
 
     

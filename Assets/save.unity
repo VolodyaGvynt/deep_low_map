@@ -251,10 +251,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   straight: {fileID: 8968561806412864114, guid: 4fd4c5cf1bb8b384ea6c3b81e0e526ea, type: 3}
-  corner: {fileID: 0}
-  TSection: {fileID: 0}
-  Cross: {fileID: 0}
-  end: {fileID: 0}
+  corner: {fileID: 7275603357492399828, guid: d7dc1ef34c49f2441977d97d14bac480, type: 3}
+  TSection: {fileID: 2877791832234118909, guid: fe598e2eb055b9243a9c0d1c32521092, type: 3}
+  Cross: {fileID: 4923148964114796942, guid: 5a296c84051f324409e34a9f42ef355d, type: 3}
+  end: {fileID: 6402922443098765106, guid: 01d35f1f4c3eaec408c430288ed46ed6, type: 3}
 --- !u!4 &969794645
 Transform:
   m_ObjectHideFlags: 0
@@ -303,7 +303,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 9cb316e806bb90241b2af968a087e026, type: 2}
   rootSentence: '[F]--F'
   iterationLimit: 2
-  randIgnoreRule: 1
+  randIgnoreRule: 0
   ignoreChance: 0.3
 --- !u!4 &1795016575
 Transform:
