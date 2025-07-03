@@ -19,52 +19,19 @@ public class TileMapGenerator : MonoBehaviour {
 
     Dictionary<int, GameObject> tileset;
     Dictionary<int, GameObject> tileGroups;
-    GameObject structGroup;
     
-    public LSystemGenerator lSystemGenerator;
-    public SimpleVisualizer structVisualizer;
-    public bool generateStructures = true;
-
+    
     public void GenerateMapInEditor() {
-        ClearExistingMap();
         CreateTileset();
         CreateTileGroups();
 
         float[,] noiseMap = NoiseGenerator.GenerateNoiseMap(mapWidth, mapHeight, magnification,  octaves, persistence, lacunarity, seed);
         GenerateMap(noiseMap);
 
-        if (generateStructures) {
-            GenerateStructures();
-        }
+        
     }
 
-    public void ClearExistingMap()
-    {
-#if UNITY_EDITOR
-        if (structVisualizer?.roadHelper != null)
-        {
-            structVisualizer.roadHelper.ClearRoads();
-        }
-
-        for (int i = transform.childCount - 1; i >= 0; i--)
-        {
-            Transform child = transform.GetChild(i);
-            
-            if (child.gameObject == lSystemGenerator?.gameObject || 
-                child.gameObject == structVisualizer?.gameObject)
-                continue;
-                
-            DestroyImmediate(child.gameObject);
-        }
-
-        if (tileset != null) tileset.Clear();
-        if (tileGroups != null) tileGroups.Clear();
-        structGroup = null;
-#endif
-    }
-
-
-    void CreateTileset() {
+        void CreateTileset() {
         tileset = new Dictionary<int, GameObject>();
         tileset.Add(0, prefabWater);
         tileset.Add(1, prefabSand);
@@ -81,9 +48,6 @@ public class TileMapGenerator : MonoBehaviour {
             group.transform.parent = this.transform;
             tileGroups[pair.Key] = group;
         }
-
-        structGroup = new GameObject("Roads");
-        structGroup.transform.parent = this.transform;
     }
 
     void GenerateMap(float[,] noiseMap) {
@@ -98,13 +62,7 @@ public class TileMapGenerator : MonoBehaviour {
         }
     }
     
-    private void GenerateStructures() {
-        structVisualizer.roadHelper.SetPosition(mapWidth / 2f, mapHeight / 2f);
-        string roadSequence = lSystemGenerator.GenerateSequence();
-        structVisualizer.VisualiseSequence(roadSequence);
-    }
-
-    int GetTileIdFromNoise(float noiseValue) {
+       int GetTileIdFromNoise(float noiseValue) {
         float scaled = noiseValue * tileset.Count;
         if (scaled == tileset.Count) scaled = tileset.Count - 1;
         return Mathf.FloorToInt(scaled);
