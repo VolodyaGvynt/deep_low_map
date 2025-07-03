@@ -149,8 +149,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   lsystem: {fileID: 1795016574}
-  prefab: {fileID: 688811905641199985, guid: 5e33a754fec1dde46b9edf39bed3b8a2, type: 3}
-  lineMaterial: {fileID: 2100000, guid: 1b061dac8984c0b47b91c5f4a694d7a1, type: 2}
+  roadHelper: {fileID: 969794644}
 --- !u!4 &435452484
 Transform:
   m_ObjectHideFlags: 0
@@ -222,6 +221,55 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &969794643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 969794645}
+  - component: {fileID: 969794644}
+  m_Layer: 0
+  m_Name: RoadHelper
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &969794644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969794643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0728af1723a99a248853e8ce658d73f2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  straight: {fileID: 8968561806412864114, guid: 4fd4c5cf1bb8b384ea6c3b81e0e526ea, type: 3}
+  corner: {fileID: 0}
+  TSection: {fileID: 0}
+  Cross: {fileID: 0}
+  end: {fileID: 0}
+--- !u!4 &969794645
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 969794643}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 4.258336, y: 20.80338, z: -0.875676}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1795016573
 GameObject:
   m_ObjectHideFlags: 0
@@ -279,3 +327,4 @@ SceneRoots:
   - {fileID: 635947418}
   - {fileID: 1795016575}
   - {fileID: 435452484}
+  - {fileID: 969794645}

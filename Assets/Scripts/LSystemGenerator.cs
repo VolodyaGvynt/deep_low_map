@@ -14,11 +14,7 @@ public class LSystemGenerator : MonoBehaviour {
     public float ignoreChance = 0.3f;
     
 
-    private void Start() {
-        Debug.Log(GenerateSequence());
-    }
-
-    public string GenerateSequence(string word = null) {
+        public string GenerateSequence(string word = null) {
         if (word == null) {
             word = rootSentence;
         }
@@ -45,7 +41,7 @@ public class LSystemGenerator : MonoBehaviour {
         foreach (var rule in rules) {
             if (rule.letter == c.ToString()) {
                 if (randIgnoreRule) {
-                    if (Random.value < ignoreChance && currIteration > 1) {
+                    if (Random.value < ignoreChance) {
                         return;
                     }
                 }

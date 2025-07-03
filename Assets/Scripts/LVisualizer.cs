@@ -5,8 +5,8 @@ public class LVisualizer : MonoBehaviour
 {
     public LSystemGenerator lsystem;
     List<Vector3> positions = new List<Vector3>();
-    public GameObject prefab;
-    public Material lineMaterial;
+
+    public RoadHelper roadHelper;
 
     private int length = 8;
     private float angle = 90;
@@ -52,39 +52,23 @@ public class LVisualizer : MonoBehaviour
                 case EncodingLetter.draw:
                     tempPos = currPos;
                     currPos += dir * currLength;
-                    DrawLine(tempPos, currPos, Color.red);
-                    Debug.Log($"Drawing line of lenght {currLength}");
+                    roadHelper.PlaceRoad(tempPos, Vector3Int.RoundToInt(dir), currLength);
                     currLength = Mathf.Max(currLength - 2, 1);
                     positions.Add(currPos);
                     break;
-                case EncodingLetter.turnLeft:
+                case EncodingLetter.turnRight:
                     dir = Quaternion.AngleAxis(angle, Vector3.forward) * dir;
                     break;
-                case EncodingLetter.turnRight:
+                case EncodingLetter.turnLeft:
                     dir = Quaternion.AngleAxis(-angle, Vector3.forward) * dir;
                     break;
             }
         }
 
-        foreach (var pos in positions)
-        {
-           Instantiate(prefab, pos, Quaternion.identity);         
-        }
+        
     }
 
-    private void DrawLine(Vector3 start, Vector3 end, Color color)
-    {
-        GameObject lineObject = new GameObject("Line");
-        lineObject.transform.position = start;
-        LineRenderer lineRenderer = lineObject.AddComponent<LineRenderer>();
-        lineRenderer.material = lineMaterial;
-        lineRenderer.startColor = color;
-        lineRenderer.endColor = color;
-        lineRenderer.startWidth = 0.1f;
-        lineRenderer.endWidth = 0.1f;
-        lineRenderer.SetPosition(0, start);
-        lineRenderer.SetPosition(1, end);
-    }
+    
 
     public enum EncodingLetter { 
         unknown = '1',
