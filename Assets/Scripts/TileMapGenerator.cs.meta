@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: c3c4cf338af56794787dc7b6f541617f
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - prefabWater: {fileID: 5312219044441334224, guid: f79422804e11fe54a9afc6e2dcc57cf6, type: 3}
+  - prefabSand: {fileID: 2286498618873606720, guid: bf82b10eb121d534da942416b897fd5b, type: 3}
+  - prefabGrass: {fileID: 4342442469013066127, guid: 417468c82adb19647b17812ec4e97cc9, type: 3}
+  - prefabStone: {fileID: 8303853196015436169, guid: d4e76cbad33056a4e821ee941b5eca76, type: 3}
+  - prefabSnow: {fileID: 3633330683058518803, guid: 1e26b216e038da74f8ca7f18dc387426, type: 3}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
