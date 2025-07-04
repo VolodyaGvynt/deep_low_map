@@ -7,12 +7,16 @@ public class LVisualizer : MonoBehaviour
     List<Vector3> positions = new List<Vector3>();
 
     public RoadHelper roadHelper;
+    public StructureHelper structureHelper;
 
     private int length = 8;
     private float angle = 90;
 
       public void Visualize(string sequence)
     {
+        roadHelper.Clear();
+        structureHelper.Clear();
+
         int currLength = length;
         positions.Clear();
         Stack<AgentParameters> savePoints = new Stack<AgentParameters>();
@@ -65,7 +69,7 @@ public class LVisualizer : MonoBehaviour
             }
         }
         roadHelper.FixRoads();
-
+        structureHelper.PlaceStructure(roadHelper.GetPositions());
     }
 
     

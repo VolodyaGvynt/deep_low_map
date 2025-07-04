@@ -1,12 +1,19 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System.Linq;
+
 
 public class RoadHelper : MonoBehaviour
 {
     public GameObject straight, corner, TSection, Cross, end;
+    
 
     Dictionary<Vector3Int, GameObject> roadDictionary = new Dictionary<Vector3Int, GameObject>();
     HashSet<Vector3Int> fixCandidates = new HashSet<Vector3Int>();
+
+    public List<Vector3Int> GetPositions() { 
+        return roadDictionary.Keys.ToList();
+    }
 
     public void PlaceRoad(Vector3 position, Vector3Int direction, int length)
     {
@@ -57,7 +64,6 @@ public class RoadHelper : MonoBehaviour
                     rotation = Quaternion.Euler(0, 0, -90);
                 else if (neighbourDirections.Contains(Direction.Right))
                     rotation = Quaternion.Euler(0, 0, 90);
-                
 
                 roadDictionary[pos] = Instantiate(end, new Vector3(pos.x, pos.y, 0), rotation, transform);
             }
@@ -72,11 +78,11 @@ public class RoadHelper : MonoBehaviour
                 DestroyImmediate(roadDictionary[pos]);
 
                 if (neighbourDirections.Contains(Direction.Up) && neighbourDirections.Contains(Direction.Left))
-                    rotation = Quaternion.Euler(0, 0, -90);
+                    rotation = Quaternion.Euler(0, 0, 90);
                 else if (neighbourDirections.Contains(Direction.Down) && neighbourDirections.Contains(Direction.Left))
                     rotation = Quaternion.Euler(0, 0, 180);
                 else if (neighbourDirections.Contains(Direction.Down) && neighbourDirections.Contains(Direction.Right))
-                    rotation = Quaternion.Euler(0, 0, 90);
+                    rotation = Quaternion.Euler(0, 0, -90);
 
                 roadDictionary[pos] = Instantiate(corner, new Vector3(pos.x, pos.y, 0), rotation, transform);
             }
@@ -107,4 +113,17 @@ public class RoadHelper : MonoBehaviour
             }
         }
     }
+
+    public void Clear()
+    {
+        foreach (var road in roadDictionary.Values)
+        {
+            if (road != null)
+                DestroyImmediate(road);
+        }
+
+        roadDictionary.Clear();
+        fixCandidates.Clear();
+    }
+
 }
