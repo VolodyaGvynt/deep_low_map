@@ -1,18 +1,18 @@
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(GVisualizer))]
+[CustomEditor(typeof(GridTownGenerator))]
 public class GVisualizerEditor : Editor
 {
     public override void OnInspectorGUI()
     {
-        GVisualizer visualizer = (GVisualizer)target;
+        GridTownGenerator visualizer = (GridTownGenerator)target;
 
         DrawDefaultInspector();
 
         if (GUILayout.Button("Generate Brick Wall Layout"))
         {
-            visualizer.VisualizeBrickWall();
+            visualizer.GenerateGridTown();
             Debug.Log("Brick Wall layout generated.");
         }
     }

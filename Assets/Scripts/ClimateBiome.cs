@@ -1,7 +1,7 @@
 using UnityEngine;
 
 [System.Serializable]
-public class Biome
+public class ClimateBiome
 {
     public string name;
     public GameObject prefab;

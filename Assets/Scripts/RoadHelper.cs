@@ -26,10 +26,11 @@ public class RoadHelper : MonoBehaviour
             var road = Instantiate(straight, new Vector3(pos.x, pos.y, 0), rotation, transform);
             roadDictionary.Add(pos, road);
 
-            if (i == 0 || i == length - 1)
-            {
-                fixCandidates.Add(pos);
-            }
+            //if (i == 0 || i == length - 1)
+            //{
+            //    fixCandidates.Add(pos);
+            //}
+            fixCandidates.Add(pos);
         }
     }
 
@@ -51,67 +52,90 @@ public class RoadHelper : MonoBehaviour
     {
         foreach (var pos in fixCandidates)
         {
-            List<Direction> neighbourDirections = PlacementHelper.FindNeighbour(pos, roadDictionary.Keys);
+            List<Direction> neighbours = PlacementHelper.FindNeighbour(pos, roadDictionary.Keys);
             Quaternion rotation = Quaternion.identity;
 
-            if (neighbourDirections.Count == 1)
-            {
+            if (roadDictionary[pos] != null)
                 DestroyImmediate(roadDictionary[pos]);
 
-                if (neighbourDirections.Contains(Direction.Up))
-                    rotation = Quaternion.Euler(0, 0, 180);
-                else if (neighbourDirections.Contains(Direction.Left))
-                    rotation = Quaternion.Euler(0, 0, -90);
-                else if (neighbourDirections.Contains(Direction.Right))
-                    rotation = Quaternion.Euler(0, 0, 90);
+            bool up = neighbours.Contains(Direction.Up);
+            bool down = neighbours.Contains(Direction.Down);
+            bool left = neighbours.Contains(Direction.Left);
+            bool right = neighbours.Contains(Direction.Right);
+
+            int count = neighbours.Count;
+
+            if (count == 1)
+            {
+                if (up) rotation = Quaternion.Euler(0, 0, 180);
+                else if (down) rotation = Quaternion.Euler(0, 0, 0);
+                else if (left) rotation = Quaternion.Euler(0, 0, -90);
+                else if (right) rotation = Quaternion.Euler(0, 0, 90);
 
                 roadDictionary[pos] = Instantiate(end, new Vector3(pos.x, pos.y, 0), rotation, transform);
             }
-            else if (neighbourDirections.Count == 2)
+            else if (count == 2)
             {
-                if ((neighbourDirections.Contains(Direction.Up) && neighbourDirections.Contains(Direction.Down)) ||
-                    (neighbourDirections.Contains(Direction.Left) && neighbourDirections.Contains(Direction.Right)))
+                if ((up && down) || (left && right))
                 {
-                    continue;
+                    rotation = (up && down) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 0, -90);
+                    roadDictionary[pos] = Instantiate(straight, new Vector3(pos.x, pos.y, 0), rotation, transform);
                 }
+                else
+                {
+                    if (up && right) rotation = Quaternion.Euler(0, 0, 0);
+                    else if (right && down) rotation = Quaternion.Euler(0, 0, -90);
+                    else if (down && left) rotation = Quaternion.Euler(0, 0, 180);
+                    else if (left && up) rotation = Quaternion.Euler(0, 0, 90);
 
-                DestroyImmediate(roadDictionary[pos]);
-
-                if (neighbourDirections.Contains(Direction.Up) && neighbourDirections.Contains(Direction.Left))
-                    rotation = Quaternion.Euler(0, 0, 90);
-                else if (neighbourDirections.Contains(Direction.Down) && neighbourDirections.Contains(Direction.Left))
-                    rotation = Quaternion.Euler(0, 0, 180);
-                else if (neighbourDirections.Contains(Direction.Down) && neighbourDirections.Contains(Direction.Right))
-                    rotation = Quaternion.Euler(0, 0, -90);
-
-                roadDictionary[pos] = Instantiate(corner, new Vector3(pos.x, pos.y, 0), rotation, transform);
+                    roadDictionary[pos] = Instantiate(corner, new Vector3(pos.x, pos.y, 0), rotation, transform);
+                }
             }
-            else if (neighbourDirections.Count == 3)
+            else if (count == 3)
             {
-                DestroyImmediate(roadDictionary[pos]);
-
-                
-                if (neighbourDirections.Contains(Direction.Up) &&
-                    neighbourDirections.Contains(Direction.Right) &&
-                    neighbourDirections.Contains(Direction.Down))
-                    rotation = Quaternion.Euler(0, 0, 90);
-                else if (neighbourDirections.Contains(Direction.Up) &&
-                         neighbourDirections.Contains(Direction.Left) &&
-                         neighbourDirections.Contains(Direction.Down))
-                    rotation = Quaternion.Euler(0, 0, -90);
-                else if (neighbourDirections.Contains(Direction.Up) &&
-                         neighbourDirections.Contains(Direction.Left) &&
-                         neighbourDirections.Contains(Direction.Right))
-                    rotation = Quaternion.Euler(0, 0, 180);
+                if (!up) rotation = Quaternion.Euler(0, 0, 0);
+                else if (!right) rotation = Quaternion.Euler(0, 0, -90);
+                else if (!down) rotation = Quaternion.Euler(0, 0, 180);
+                else if (!left) rotation = Quaternion.Euler(0, 0, 90);
 
                 roadDictionary[pos] = Instantiate(TSection, new Vector3(pos.x, pos.y, 0), rotation, transform);
             }
-            else if (neighbourDirections.Count == 4)
+            else if (count == 4)
             {
-                DestroyImmediate(roadDictionary[pos]);
                 roadDictionary[pos] = Instantiate(Cross, new Vector3(pos.x, pos.y, 0), rotation, transform);
             }
         }
+    }
+
+    public int GetRoadSegmentCount()
+    {
+        return roadDictionary.Count;
+    }
+
+    public Dictionary<string, int> GetRoadTypeCounts()
+    {
+        Dictionary<string, int> counts = new Dictionary<string, int>()
+    {
+        {"Straight", 0},
+        {"Corner", 0},
+        {"TSection", 0},
+        {"Cross", 0},
+        {"End", 0}
+    };
+
+        foreach (var kvp in roadDictionary)
+        {
+            GameObject roadObj = kvp.Value;
+            if (roadObj == null) continue;
+
+            if (roadObj.name.StartsWith(straight.name)) counts["Straight"]++;
+            else if (roadObj.name.StartsWith(corner.name)) counts["Corner"]++;
+            else if (roadObj.name.StartsWith(TSection.name)) counts["TSection"]++;
+            else if (roadObj.name.StartsWith(Cross.name)) counts["Cross"]++;
+            else if (roadObj.name.StartsWith(end.name)) counts["End"]++;
+        }
+
+        return counts;
     }
 
     public void Clear()

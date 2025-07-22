@@ -1,7 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-public class LVisualizer : MonoBehaviour
+public class LTownGenerator : MonoBehaviour
 {
     public LSystemGenerator lsystem;
     List<Vector3> positions = new List<Vector3>();
@@ -12,10 +12,13 @@ public class LVisualizer : MonoBehaviour
     private int length = 8;
     private float angle = 90;
 
-      public void Visualize(string sequence)
+      public void GenerateLTown(string sequence)
     {
         roadHelper.Clear();
         structureHelper.Clear();
+
+        long memBefore = UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong();
+        float timeBefore = Time.realtimeSinceStartup;
 
         int currLength = length;
         positions.Clear();
@@ -70,9 +73,33 @@ public class LVisualizer : MonoBehaviour
         }
         roadHelper.FixRoads();
         structureHelper.PlaceStructure(roadHelper.GetPositions());
+
+        float timeAfter = Time.realtimeSinceStartup;
+        long memAfter = UnityEngine.Profiling.Profiler.GetTotalAllocatedMemoryLong();
+
+        Debug.Log($"Generacja miasta L: czas = {(timeAfter - timeBefore) * 1000f} ms");
+        Debug.Log($"Generacja miasta L: pamiec = {(memAfter - memBefore) / 1024f} KB");
+
+        PrintMetrics();
     }
 
-    
+    void PrintMetrics()
+    {
+        int roadCount = roadHelper.GetRoadSegmentCount();
+        var roadTypes = roadHelper.GetRoadTypeCounts();
+        int buildingCount = structureHelper.GetBuildingCount();
+        float occupancy = structureHelper.GetOccupancyRate(roadHelper.GetPositions());
+
+        Debug.Log($"[LVisualizer] Liczba segment�w dr�g: {roadCount}");
+        foreach (var kvp in roadTypes)
+        {
+            Debug.Log($"[LVisualizer] {kvp.Key}: {kvp.Value}");
+        }
+        Debug.Log($"[LVisualizer] Liczba budynk�w: {buildingCount}");
+        Debug.Log($"[LVisualizer] Procent zaj?to?ci: {occupancy * 100f:F2}%");
+    }
+
+
 
     public enum EncodingLetter { 
         unknown = '1',

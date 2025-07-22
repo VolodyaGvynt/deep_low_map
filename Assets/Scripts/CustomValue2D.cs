@@ -12,10 +12,9 @@ public class CustomValue2D
         mask = hashList.Length - 1;
     }
 
-    public float Noise(float x, float y, float frequency)
+    public float Noise(float x, float y)
     {
-        x *= frequency;
-        y *= frequency;
+
 
         int x0 = Mathf.FloorToInt(x);
         int y0 = Mathf.FloorToInt(y);

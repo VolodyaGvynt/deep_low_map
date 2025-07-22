@@ -25,10 +25,8 @@ public class StructureHelper : MonoBehaviour
         {
             if (blockedPos.Contains(freeSpot.Key)) continue;
 
-            // Roll for empty spot first
             if (UnityEngine.Random.value < emptySpotChance)
             {
-                // Skip placing anything here; leave spot empty
                 continue;
             }
 
@@ -41,31 +39,13 @@ public class StructureHelper : MonoBehaviour
                 case Direction.Right: rotation = Quaternion.Euler(0, 0, 90); break;
             }
 
-            bool placed = false;
 
             if (UnityEngine.Random.value < natureChance && nature.Length > 0)
             {
-                var natureObject = Instantiate(nature[UnityEngine.Random.Range(0, nature.Length)], freeSpot.Key, rotation, transform);
+                var natureObject = Instantiate(nature[UnityEngine.Random.Range(0, nature.Length)], freeSpot.Key, Quaternion.identity, transform);
                 natureDictionary.Add(freeSpot.Key, natureObject);
-                placed = true;
             }
-
-            if (!placed)
-            {
-                for (int i = 0; i < houses.Length; i++)
-                {
-                    if (houses[i].quantity != -1 && houses[i].CanPlace())
-                    {
-                        var house = Instantiate(houses[i].GetPrefab(), freeSpot.Key, rotation, transform);
-                        structureDictionary.Add(freeSpot.Key, house);
-                        placed = true;
-                        break;
-                    }
-                }
-            }
-
-            if (!placed)
-            {
+            else {
                 for (int i = 0; i < houses.Length; i++)
                 {
                     if (houses[i].quantity == -1)
@@ -76,6 +56,9 @@ public class StructureHelper : MonoBehaviour
                     }
                 }
             }
+
+
+            
         }
     }
 
@@ -107,6 +90,28 @@ public class StructureHelper : MonoBehaviour
 
     }
 
+    public int GetBuildingCount()
+    {
+        return structureDictionary.Count;
+    }
+
+    public int GetNatureCount()
+    {
+        return natureDictionary.Count;
+    }
+
+    public float GetOccupancyRate(List<Vector3Int> roadPositions)
+    {
+        var freeSpots = FindFreeSpots(roadPositions);
+
+        int freeCount = freeSpots.Count;
+
+        int buildingCount = GetBuildingCount();
+
+        if (freeCount + buildingCount == 0) return 0;
+
+        return (float)buildingCount / (buildingCount + freeCount);
+    }
 
     public void Clear()
     {
