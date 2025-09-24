@@ -36,8 +36,8 @@ Two approaches for biome assignment:
 In both approaches, you can choose the number of biome types and customize them.  
 
 **Examples:**  
-![Climate-Based Biomes](images/climate_biomes.png)  
-![Voronoi Biomes](images/vornoi_biomes.png)  
+![Voronoi Biomes](Images/vornoi_biomes.png)  
+![Climate-Based Biomes](Images/climate_biomes.png)  
 
 ---
 
@@ -48,8 +48,8 @@ Two procedural town models:
 - **L-System Based**: branching road networks with irregular layouts and organic growth patterns (historical style); more space-efficient.  
 
 **Examples:**  
-![Grid-Based Town](images/GTown.png)  
-![L-System Town](images/LTown.png)  
+![Grid-Based Town](Images/GTown.png)  
+![L-System Town](Images/LTown.png)  
 
 ---
 
