@@ -23,7 +23,7 @@ public class LTownGenerator : MonoBehaviour
         int currLength = length;
         positions.Clear();
         Stack<AgentParameters> savePoints = new Stack<AgentParameters>();
-        var currPos = Vector3.zero;
+        var currPos = transform.position;
         Vector3 dir = Vector3.up;
         Vector3 tempPos = Vector3.zero;
 

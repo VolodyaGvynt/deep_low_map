@@ -89,6 +89,27 @@ public class TileMapGeneratorEditor : Editor
             }
         }
 
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Town Generation", EditorStyles.boldLabel);
+
+        EditorGUILayout.Space();
+        EditorGUILayout.LabelField("Town Generation", EditorStyles.boldLabel);
+
+        mapGen.townType = (TownType)EditorGUILayout.EnumPopup("Town Type", mapGen.townType);
+
+        switch (mapGen.townType)
+        {
+            case TownType.LSystem:
+                mapGen.lTownGenerator = (LTownGenerator)EditorGUILayout.ObjectField("L-System Generator", mapGen.lTownGenerator, typeof(LTownGenerator), true);
+                break;
+
+            case TownType.GridBased:
+                mapGen.gridTownGenerator = (GridTownGenerator)EditorGUILayout.ObjectField("Grid Generator", mapGen.gridTownGenerator, typeof(GridTownGenerator), true);
+                break;
+        }
+
+
+
 
 
 
@@ -108,15 +129,15 @@ public class TileMapGeneratorEditor : Editor
 
         mapGen.testIterations = EditorGUILayout.IntField("Test Iterations", mapGen.testIterations);
 
-        
         if (GUILayout.Button("Test Performance (Average)"))
         {
             mapGen.MeasureAveragePerformance(mapGen.noiseType);
         }
 
-        if (GUI.changed)
+        if (mapGen.biomeType != BiomeType.None && GUILayout.Button("Test Biome Performance (Average)"))
         {
-            EditorUtility.SetDirty(mapGen);
+            mapGen.MeasureAverageBiomePerformance(mapGen.biomeType);
         }
+
     }
 }

@@ -29,7 +29,7 @@ public class GridTownGenerator : MonoBehaviour
         {
             for (int x = 0; x <= width; x++)
             {
-                Vector3Int pos = new Vector3Int(x, y, 0);
+                Vector3Int pos = Vector3Int.RoundToInt(transform.position) + new Vector3Int(x, y, 0);
                 roadHelper.PlaceRoad(pos, Vector3Int.right, 1);
                 roadPositions.Add(pos);
             }

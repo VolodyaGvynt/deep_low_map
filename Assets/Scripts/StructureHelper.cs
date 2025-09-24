@@ -42,19 +42,17 @@ public class StructureHelper : MonoBehaviour
 
             if (UnityEngine.Random.value < natureChance && nature.Length > 0)
             {
-                var natureObject = Instantiate(nature[UnityEngine.Random.Range(0, nature.Length)], freeSpot.Key, Quaternion.identity, transform);
+                var hpos = new Vector3(freeSpot.Key.x, freeSpot.Key.y, -0.5f);
+                var natureObject = Instantiate(nature[UnityEngine.Random.Range(0, nature.Length)], hpos, Quaternion.identity, transform);
                 natureDictionary.Add(freeSpot.Key, natureObject);
             }
             else {
-                for (int i = 0; i < houses.Length; i++)
-                {
-                    if (houses[i].quantity == -1)
-                    {
-                        var house = Instantiate(houses[i].GetPrefab(), freeSpot.Key, rotation, transform);
-                        structureDictionary.Add(freeSpot.Key, house);
-                        break;
-                    }
-                }
+                
+                var selectedHouse = houses[UnityEngine.Random.Range(0, houses.Length)];
+                var hpos = new Vector3(freeSpot.Key.x, freeSpot.Key.y, -0.5f);
+                var house = Instantiate(selectedHouse.GetPrefab(), hpos, rotation, transform);
+                structureDictionary.Add(freeSpot.Key, house);
+
             }
 
 

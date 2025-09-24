@@ -23,13 +23,9 @@ public class RoadHelper : MonoBehaviour
         {
             var pos = Vector3Int.RoundToInt(position + direction * i);
             if (roadDictionary.ContainsKey(pos)) continue;
-            var road = Instantiate(straight, new Vector3(pos.x, pos.y, 0), rotation, transform);
+            var road = Instantiate(straight, new Vector3(pos.x, pos.y, -0.5f), rotation, transform);
             roadDictionary.Add(pos, road);
 
-            //if (i == 0 || i == length - 1)
-            //{
-            //    fixCandidates.Add(pos);
-            //}
             fixCandidates.Add(pos);
         }
     }
@@ -72,14 +68,14 @@ public class RoadHelper : MonoBehaviour
                 else if (left) rotation = Quaternion.Euler(0, 0, -90);
                 else if (right) rotation = Quaternion.Euler(0, 0, 90);
 
-                roadDictionary[pos] = Instantiate(end, new Vector3(pos.x, pos.y, 0), rotation, transform);
+                roadDictionary[pos] = Instantiate(end, new Vector3(pos.x, pos.y, -0.5f), rotation, transform);
             }
             else if (count == 2)
             {
                 if ((up && down) || (left && right))
                 {
                     rotation = (up && down) ? Quaternion.Euler(0, 0, 0) : Quaternion.Euler(0, 0, -90);
-                    roadDictionary[pos] = Instantiate(straight, new Vector3(pos.x, pos.y, 0), rotation, transform);
+                    roadDictionary[pos] = Instantiate(straight, new Vector3(pos.x, pos.y, -0.5f), rotation, transform);
                 }
                 else
                 {
@@ -88,7 +84,7 @@ public class RoadHelper : MonoBehaviour
                     else if (down && left) rotation = Quaternion.Euler(0, 0, 180);
                     else if (left && up) rotation = Quaternion.Euler(0, 0, 90);
 
-                    roadDictionary[pos] = Instantiate(corner, new Vector3(pos.x, pos.y, 0), rotation, transform);
+                    roadDictionary[pos] = Instantiate(corner, new Vector3(pos.x, pos.y, - 0.5f), rotation, transform);
                 }
             }
             else if (count == 3)
@@ -98,11 +94,11 @@ public class RoadHelper : MonoBehaviour
                 else if (!down) rotation = Quaternion.Euler(0, 0, 180);
                 else if (!left) rotation = Quaternion.Euler(0, 0, 90);
 
-                roadDictionary[pos] = Instantiate(TSection, new Vector3(pos.x, pos.y, 0), rotation, transform);
+                roadDictionary[pos] = Instantiate(TSection, new Vector3(pos.x, pos.y, -0.5f), rotation, transform);
             }
             else if (count == 4)
             {
-                roadDictionary[pos] = Instantiate(Cross, new Vector3(pos.x, pos.y, 0), rotation, transform);
+                roadDictionary[pos] = Instantiate(Cross, new Vector3(pos.x, pos.y, -0.5f), rotation, transform);
             }
         }
     }

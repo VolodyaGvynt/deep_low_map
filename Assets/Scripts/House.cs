@@ -6,8 +6,7 @@ public class House
 {
     [SerializeField]
     private GameObject[] prefabs;
-    public int quantity;
-    public int placedQuantity;
+        public int placedQuantity;
 
     public GameObject GetPrefab()
     {
@@ -19,10 +18,7 @@ public class House
         return prefabs[0];
     }
 
-    public bool CanPlace()
-    {
-        return placedQuantity < quantity;
-    }
+    
 
 
     public void Reset()

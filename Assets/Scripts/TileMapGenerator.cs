@@ -6,10 +6,12 @@ public class TileMapGenerator : MonoBehaviour
 {
     public NoiseType noiseType = NoiseType.Perlin;
     public BiomeType biomeType = BiomeType.None;
+    public TownType townType = TownType.None;
+
 
     public int mapWidth = 100;
     public int mapHeight = 100;
-    public float magnification = 7f;
+    public float magnification = 7f;    
 
     public int octaves = 4;
     public float persistence = 0.5f;
@@ -23,9 +25,10 @@ public class TileMapGenerator : MonoBehaviour
     public bool biomeMap = false;
 
     public int voronoiSiteCount = 5;
-    public List<VoronoiBiome> voronoiBiomes;
-    public List<TileLayer> tileLayers;
-    public List<ClimateBiome> biomes;
+    public List<VoronoiBiome> voronoiBiomes = new List<VoronoiBiome>();
+    public List<TileLayer> tileLayers = new List<TileLayer>();
+    public List<ClimateBiome> biomes = new List<ClimateBiome>();
+
 
     private Dictionary<int, GameObject> tileGroups;
     private GameObject biomeGroup;
@@ -34,10 +37,16 @@ public class TileMapGenerator : MonoBehaviour
     private ClimateBiomeHelper biomeHelper;
     private VoronoiBiomeHelper voronoiGenerator;
 
+    public LTownGenerator lTownGenerator;
+    public GridTownGenerator gridTownGenerator;
+
+    private Dictionary<string, List<Vector2Int>> biomeTileMap = new();
+
     public void GenerateMapInEditor()
     {
         ClearMap();
         CreateTileGroups();
+        biomeTileMap.Clear();
 
         float[,] elevationMap = NoiseGenerator.GenerateNoiseMap(
             mapWidth, mapHeight, magnification,
@@ -65,7 +74,7 @@ public class TileMapGenerator : MonoBehaviour
                 if (biomeMap)
                     GenerateBiomeMap(elevationMap, tempMap, moistMap, BiomeType.ClimateBased);
                 else
-                    GenerateCombinedMap(elevationMap, tempMap, moistMap);
+                    GenerateClimateMap(elevationMap, tempMap, moistMap);
                 break;
 
             case BiomeType.Voronoi:
@@ -79,6 +88,16 @@ public class TileMapGenerator : MonoBehaviour
                 GenerateStandardMap(elevationMap);
                 break;
         }
+
+        if (townType == TownType.LSystem)
+        {
+            SpawnTownInBiome("Snow");
+        }
+        else if (townType == TownType.GridBased)
+        {
+            SpawnTownInBiome("Snow");
+        }
+        ;
     }
 
     void CreateTileGroups()
@@ -111,7 +130,7 @@ public class TileMapGenerator : MonoBehaviour
         }
     }
 
-    void GenerateCombinedMap(float[,] elevationMap, float[,] temperatureMap, float[,] moistureMap)
+    void GenerateClimateMap(float[,] elevationMap, float[,] temperatureMap, float[,] moistureMap)
     {
         int width = elevationMap.GetLength(0);
         int height = elevationMap.GetLength(1);
@@ -125,11 +144,16 @@ public class TileMapGenerator : MonoBehaviour
                 float moist = moistureMap[x, y];
 
                 var biome = biomeHelper.GetBiome(elev, temp, moist);
-                if (biome != null)
+                if (biome != null && biome.prefab != null)
                 {
                     GameObject tile = Instantiate(biome.prefab, biomeGroup.transform);
                     tile.name = $"Biome_{biome.name}_x[{x}]_y[{y}]";
-                    tile.transform.localPosition = new Vector3(x, y, 0);
+                    tile.transform.localPosition = new Vector3(x, y, -0.4f);
+
+                    if (!biomeTileMap.ContainsKey(biome.name))
+                        biomeTileMap[biome.name] = new List<Vector2Int>();
+
+                    biomeTileMap[biome.name].Add(new Vector2Int(x, y));
                 }
                 else
                 {
@@ -158,15 +182,21 @@ public class TileMapGenerator : MonoBehaviour
                             GameObject tile = Instantiate(biome.prefab, this.transform);
                             tile.name = $"Biome_{biome.name}_x[{x}]_y[{y}]";
                             tile.transform.localPosition = new Vector3(x, y, 0);
+
+                            if (!biomeTileMap.ContainsKey(biome.name))
+                                biomeTileMap[biome.name] = new List<Vector2Int>();
+
+                            biomeTileMap[biome.name].Add(new Vector2Int(x, y));
                         }
                     }
                 }
+                //PrintBiomeStatistics();
                 break;
 
             case BiomeType.Voronoi:
                 var generator = new VoronoiBiomeHelper();
                 int adjustedSites = Mathf.Max(5, Mathf.RoundToInt(mapWidth * mapHeight / (20f * magnification)));
-                UnityEngine.Debug.Log($"Voronoi Site Count: {adjustedSites}");
+                //UnityEngine.Debug.Log($"Voronoi Site Count: {adjustedSites}");
                 generator.SetBiomes(voronoiBiomes, mapWidth, mapHeight, seed, adjustedSites);
 
                 for (int x = 0; x < mapWidth; x++)
@@ -179,9 +209,15 @@ public class TileMapGenerator : MonoBehaviour
                             GameObject tile = Instantiate(biome.prefab, this.transform);
                             tile.name = $"Voronoi_{biome.name}_x[{x}]_y[{y}]";
                             tile.transform.localPosition = new Vector3(x, y, 0);
+
+                            if (!biomeTileMap.ContainsKey(biome.name))
+                                biomeTileMap[biome.name] = new List<Vector2Int>();
+
+                            biomeTileMap[biome.name].Add(new Vector2Int(x, y));
                         }
                     }
                 }
+                //PrintBiomeStatistics();
                 break;
         }
     }
@@ -214,11 +250,16 @@ public class TileMapGenerator : MonoBehaviour
                     GameObject tile = Instantiate(biome.prefab, biomeGroup.transform);
                     tile.name = $"VoronoiBiome_{biome.name}_x[{x}]_y[{y}]";
                     tile.transform.localPosition = new Vector3(x, y, 0);
+
+                    if (!biomeTileMap.ContainsKey(biome.name))
+                        biomeTileMap[biome.name] = new List<Vector2Int>();
+
+                    biomeTileMap[biome.name].Add(new Vector2Int(x, y));
                 }
                 else
                 {
                     int tileID = GetTileIdFromNoise(elev);
-                    CreateTile(tileID, x, y);
+                    CreateBiomeTile(tileID, x, y);
                 }
             }
         }
@@ -239,8 +280,56 @@ public class TileMapGenerator : MonoBehaviour
     {
         GameObject tile = Instantiate(tileLayers[id].prefab, tileGroups[id].transform);
         tile.name = $"Tile_x[{x}]_y[{y}]";
+        tile.transform.localPosition = new Vector3(x, y, -0.6f);
+    }
+
+    void CreateBiomeTile(int id, int x, int y)
+    {
+        GameObject tile = Instantiate(tileLayers[id].prefab, tileGroups[id].transform);
+        tile.name = $"Tile_x[{x}]_y[{y}]";
         tile.transform.localPosition = new Vector3(x, y, 0);
     }
+
+    public void SpawnTownInBiome(string biomeName)
+    {
+        if (!biomeTileMap.ContainsKey(biomeName) || biomeTileMap[biomeName].Count == 0)
+        {
+            UnityEngine.Debug.LogWarning($"Biome '{biomeName}' not found or empty — cannot place town.");
+            return;
+        }
+
+        List<Vector2Int> tiles = biomeTileMap[biomeName];
+
+        Vector2 average = Vector2.zero;
+        foreach (var tile in tiles)
+        {
+            average += new Vector2(tile.x, tile.y);
+        }
+        average /= tiles.Count;
+
+        Vector2Int center = new Vector2Int(Mathf.RoundToInt(average.x), Mathf.RoundToInt(average.y));
+        Vector3 worldPos = new Vector3(center.x, center.y, 0);
+
+        GameObject townRoot = new GameObject($"{biomeName}_Town");
+        townRoot.transform.position = worldPos;
+
+        if (townType == TownType.LSystem && lTownGenerator != null)
+        {
+            var lGen = Instantiate(lTownGenerator, worldPos, Quaternion.identity);
+            lGen.name = $"{biomeName}_LTown";
+            lGen.GenerateLTown(lGen.lsystem.GenerateSequence());
+        }
+        else if (townType == TownType.GridBased && gridTownGenerator != null)
+        {
+            var gGen = Instantiate(gridTownGenerator, worldPos, Quaternion.identity);
+            gGen.name = $"{biomeName}_GridTown";
+            gGen.GenerateGridTown();
+        }
+    }
+
+
+
+
 
     public (long timeMs, long memoryBytes) GenerateMapAndMeasurePerformance()
     {
@@ -282,6 +371,78 @@ public class TileMapGenerator : MonoBehaviour
         UnityEngine.Debug.Log($"{noiseType} average generation time over {testIterations} runs: {avgTime} ms");
         UnityEngine.Debug.Log($"{noiseType} average memory used over {testIterations} runs: {avgMemoryKB:F2} KB");
     }
+
+    public void PrintBiomeStatistics()
+    {
+        UnityEngine.Debug.Log("=== Biome Statistics ===");
+        foreach (var kvp in biomeTileMap)
+        {
+            string name = kvp.Key;
+            int count = kvp.Value.Count;
+            float percentage = (count / (float)(mapWidth * mapHeight)) * 100f;
+            UnityEngine.Debug.Log($"{name}: {count} tiles ({percentage:F2}%)");
+        }
+    }
+
+    public (long timeMs, long memoryBytes) GenerateBiomeMapAndMeasurePerformance(BiomeType biomeType)
+    {
+        float[,] elevationMap = NoiseGenerator.GenerateNoiseMap(
+            mapWidth, mapHeight, magnification, octaves, persistence, lacunarity, seed, noiseType);
+
+        float[,] tempMap = null;
+        float[,] moistMap = null;
+
+        if (biomeType == BiomeType.ClimateBased)
+        {
+            biomeHelper = new ClimateBiomeHelper(biomes, seaLevel, mountainLevel);
+            tempMap = NoiseGenerator.GenerateNoiseMap(
+                mapWidth, mapHeight, magnification, octaves, persistence, lacunarity, seed + 1000, noiseType);
+            moistMap = NoiseGenerator.GenerateNoiseMap(
+                mapWidth, mapHeight, magnification, octaves, persistence, lacunarity, seed + 2000, noiseType);
+        }
+
+        ClearMap();
+        CreateTileGroups();
+        biomeTileMap.Clear();
+
+        System.GC.Collect();
+        System.GC.WaitForPendingFinalizers();
+        System.GC.Collect();
+
+        long memoryBefore = System.GC.GetTotalMemory(true);
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+
+        GenerateBiomeMap(elevationMap, tempMap, moistMap, biomeType);
+
+        stopwatch.Stop();
+        long memoryAfter = System.GC.GetTotalMemory(false);
+
+        return (stopwatch.ElapsedMilliseconds, memoryAfter - memoryBefore);
+    }
+
+    public void MeasureAverageBiomePerformance(BiomeType biomeType)
+    {
+        long totalTime = 0;
+        long totalMemory = 0;
+
+        for (int i = 0; i < testIterations; i++)
+        {
+            var result = GenerateBiomeMapAndMeasurePerformance(biomeType);
+            totalTime += result.timeMs;
+            totalMemory += result.memoryBytes;
+        }
+
+        float avgTime = totalTime / (float)testIterations;
+        float avgMemoryKB = totalMemory / (float)testIterations / 1024f;
+
+        UnityEngine.Debug.Log($"=== {biomeType} Biome Generation Performance ===");
+        UnityEngine.Debug.Log($"Average Time: {avgTime:F2} ms");
+        UnityEngine.Debug.Log($"Average Memory: {avgMemoryKB:F2} KB");
+    }
+
+
+
 
     public void ClearMap()
     {

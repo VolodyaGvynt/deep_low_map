@@ -1,0 +1,71 @@
+# Instrukcja uruchomienia projektu
+
+## 1. Przygotowanie projektu
+1. Utwórz nowy projekt w **Unity** (zalecana wersja: np. 2021.3 LTS).
+2. W katalogu projektu stwórz folder **Scripts** i przenie? do niego wszystkie pliki ?ród?owe.
+3. Skompiluj projekt.
+
+## 2. Konfiguracja sceny
+1. W scenie dodaj pusty obiekt (`GameObject`) i nazwij go np. **MapGenerator**.
+2. W edytorze ustaw parametry komponentu zgodnie z poni?szymi przyk?adami.
+
+---
+
+### General Settings
+- **Noise Type:** Perlin (lub Value)  
+- **Map Width:** 100  
+- **Map Height:** 100  
+- **Magnification:** 50  
+- **Seed:** 0  
+
+---
+
+### Noise Layer Settings
+- **Octaves:** 4  
+- **Persistence:** 0.5  
+- **Lacunarity:** 2  
+
+---
+
+### Tile Layers (Threshold-Based)
+- **Layer Count:** 5 (ustaw ilo?? warstw i przypisz do ka?dej prefab)  
+
+| Warstwa | Prefab      | Threshold |
+|---------|------------|-----------|
+| Tile 0  | pf_water   | 0.40      |
+| Tile 1  | pf_sand    | 0.55      |
+| Tile 2  | pf_grass   | 0.70      |
+| Tile 3  | pf_stone   | 0.80      |
+| Tile 4  | pf_snow    | 0.95      |
+
+---
+
+### Biome Settings
+- **Biome Generation:** Climate Based (lub Voronoi)  
+- **Use Biome Map:** False  
+- **Sea Level:** 0.45  
+- **Mountain Level:** 0.7  
+- **Biome Count:** 5  
+
+| Biome       | Prefab       | Temp (min-max) | Moisture (min-max) |
+|-------------|-------------|----------------|---------------------|
+| Plains      | pf_grass    | 0.3 – 1        | 0.3 – 0.6           |
+| Forest      | pf_forest   | 0.3 – 1        | 0.6 – 1             |
+| Desert      | pf_sand     | 0.3 – 0.6      | 0 – 0.3             |
+| Red Desert  | pf_red_sand | 0.6 – 1        | 0 – 0.3             |
+| Snow        | pf_snow     | 0 – 0.3        | 0 – 1               |
+
+---
+
+### Town Generation
+- **Town Type:** L-System (lub Grid Based)  
+- **L-System Generator:** *L Town Generator* (znajdziesz go w katalogu `Prefabs`. Przypisanie w tym polu jest konieczne).  
+  - Analogicznie dla Grid Based – u?yj *G Town Generator*.  
+
+---
+
+## 3. Uruchomienie
+Na dole w edytorze znajduj? si? dwa przyciski:  
+   - **Generate Map** – generuje map? na podstawie ustawionych parametrów,  
+   - **Clear Map** – usuwa wygenerowan? map?.  ---
+
